@@ -8,16 +8,17 @@ export const Types = {
   REMOVE_REQUEST: 'users/REMOVE_REQUEST',
   REMOVE_SUCCESS: 'users/REMOVE_SUCCESS',
   REMOVE_FAILURE: 'users/REMOVE_FAILURE',
+  RESET: 'users/RESET',
 };
 
 /**
  * Reducers
  */
 const INITIAL_STATE = {
-  loading: false,
+  isFinished: false,
   data: [],
   error: false,
-  errorMessage: '',
+  message: '',
 };
 
 export default function users(state = INITIAL_STATE, action) {
@@ -25,40 +26,53 @@ export default function users(state = INITIAL_STATE, action) {
     case Types.ADD_REQUEST:
       return {
         ...state,
-        loading: true,
+        isFinished: false,
+        message: '',
         error: false,
       };
     case Types.ADD_SUCCESS:
       return {
         ...state,
         data: [...state.data, action.payload.data],
-        loading: false,
+        isFinished: true,
+        message: action.payload.message,
         error: false,
       };
     case Types.ADD_FAILURE:
       return {
         ...state,
+        isFinished: true,
         error: true,
-        errorMessage: action.payload.errorMessage,
+        message: action.payload.message,
       };
     case Types.REMOVE_REQUEST:
       return {
         ...state,
-        loading: true,
+        isFinished: false,
+        message: '',
         error: false,
       };
     case Types.REMOVE_SUCCESS:
       return {
         ...state,
         data: action.payload.data,
-        loading: false,
+        message: action.payload.message,
+        isFinished: true,
         error: false,
       };
     case Types.REMOVE_FAILURE:
       return {
         ...state,
         error: true,
-        errorMessage: action.payload.errorMessage,
+        isFinished: true,
+        message: action.payload.message,
+      };
+    case Types.RESET:
+      return {
+        ...state,
+        isFinished: false,
+        error: false,
+        message: '',
       };
     default:
       return state;
@@ -74,14 +88,14 @@ export const Creators = {
     payload: { user },
   }),
 
-  addUserSuccess: data => ({
+  addUserSuccess: (data, message) => ({
     type: Types.ADD_SUCCESS,
-    payload: { data },
+    payload: { data, message },
   }),
 
-  addUserFailure: errorMessage => ({
+  addUserFailure: message => ({
     type: Types.ADD_FAILURE,
-    payload: { errorMessage },
+    payload: { message },
   }),
 
   removeUserRequest: id => ({
@@ -89,13 +103,18 @@ export const Creators = {
     payload: { id },
   }),
 
-  removeUserSuccess: data => ({
+  removeUserSuccess: (data, message) => ({
     type: Types.REMOVE_SUCCESS,
-    payload: { data },
+    payload: { data, message },
   }),
 
-  removeUserFailure: errorMessage => ({
+  removeUserFailure: message => ({
     type: Types.REMOVE_FAILURE,
-    payload: { errorMessage },
+    payload: { message },
+  }),
+
+  resetUser: () => ({
+    type: Types.RESET,
+    payload: {},
   }),
 };

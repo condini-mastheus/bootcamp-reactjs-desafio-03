@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Modal from 'react-modal';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Creators as UserAction } from '../../store/ducks/users';
 
@@ -21,7 +23,26 @@ class Main extends Component {
     showModal: false,
   };
 
+  componentDidMount() {}
+
+  notify = () => {
+    const { message, isFinished, error } = this.props.users;
+    if (isFinished) {
+      const options = {
+        position: toast.POSITION.TOP_RIGHT,
+      };
+
+      if (error) {
+        toast.error(message, options);
+      } else {
+        toast.success(message, options);
+      }
+    }
+  };
+
   handleMapClick = (e) => {
+    this.props.resetUser();
+
     const [longitude, latitude] = e.lngLat;
 
     this.handleOpenModal();
@@ -61,6 +82,8 @@ class Main extends Component {
   render() {
     return (
       <Container>
+        {this.notify()}
+        <ToastContainer />
         <Map markers={this.props.users.data} handleMapClick={this.handleMapClick} />
         <Sidebar users={this.props.users.data} handleRemoveUser={this.handleRemoveUser} />
         <Modal
@@ -109,10 +132,11 @@ class Main extends Component {
 Main.propTypes = {
   addUserRequest: PropTypes.func.isRequired,
   removeUserRequest: PropTypes.func.isRequired,
+  resetUser: PropTypes.func.isRequired,
   users: PropTypes.shape({
-    loading: PropTypes.bool,
+    isFinished: PropTypes.bool,
     error: PropTypes.bool,
-    errorMessage: PropTypes.string,
+    message: PropTypes.string,
     data: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,
