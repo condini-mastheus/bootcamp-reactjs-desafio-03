@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MapGL, { Marker } from 'react-map-gl';
+import { connect } from 'react-redux';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Styles
 import { CustomMarker } from './styles';
 
-export default class Map extends Component {
+class Map extends Component {
   state = {
     viewport: {
       width: window.innerWidth,
@@ -76,3 +77,14 @@ Map.propTypes = {
     }),
   ).isRequired,
 };
+
+const mapStateToProps = state => ({
+  markers: state.users.data,
+});
+
+const mapDispatchToProps = _dispatch => ({});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Map);

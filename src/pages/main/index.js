@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import Modal from 'react-modal';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import { Creators as UserAction } from '../../store/ducks/users';
 
 // Components
 import Map from '../../components/Map';
 import Sidebar from '../../components/Sidebar';
+import Toast from '../../components/Toast';
 
 // Styles
 import { Container } from './styles';
@@ -21,23 +20,6 @@ class Main extends Component {
     latitude: 0,
     longitude: 0,
     showModal: false,
-  };
-
-  componentDidMount() {}
-
-  notify = () => {
-    const { message, isFinished, error } = this.props.users;
-    if (isFinished) {
-      const options = {
-        position: toast.POSITION.TOP_RIGHT,
-      };
-
-      if (error) {
-        toast.error(message, options);
-      } else {
-        toast.success(message, options);
-      }
-    }
   };
 
   handleMapClick = (e) => {
@@ -71,10 +53,6 @@ class Main extends Component {
     });
   };
 
-  handleRemoveUser = (id) => {
-    this.props.removeUserRequest(id);
-  };
-
   handleCloseModal = () => this.setState({ showModal: false });
 
   handleOpenModal = () => this.setState({ showModal: true });
@@ -82,10 +60,9 @@ class Main extends Component {
   render() {
     return (
       <Container>
-        {this.notify()}
-        <ToastContainer />
-        <Map markers={this.props.users.data} handleMapClick={this.handleMapClick} />
-        <Sidebar users={this.props.users.data} handleRemoveUser={this.handleRemoveUser} />
+        <Toast />
+        <Map handleMapClick={this.handleMapClick} />
+        <Sidebar />
         <Modal
           isOpen={this.state.showModal}
           onRequestClose={this.handleCloseModal}
@@ -102,7 +79,7 @@ class Main extends Component {
               padding: 0,
             },
           }}
-          contentLabel="Example Modal"
+          contentLabel="Adicionar novo usuário"
           ariaHideApp={false}
         >
           <div className="modal-header">
@@ -131,29 +108,10 @@ class Main extends Component {
 
 Main.propTypes = {
   addUserRequest: PropTypes.func.isRequired,
-  removeUserRequest: PropTypes.func.isRequired,
   resetUser: PropTypes.func.isRequired,
-  users: PropTypes.shape({
-    isFinished: PropTypes.bool,
-    error: PropTypes.bool,
-    message: PropTypes.string,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number,
-        name: PropTypes.string,
-        avatar: PropTypes.string,
-        url: PropTypes.string,
-        login: PropTypes.string,
-        latitude: PropTypes.number,
-        longitude: PropTypes.number,
-      }),
-    ),
-  }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  users: state.users,
-});
+const mapStateToProps = _state => ({});
 
 const mapDispatchToProps = dispatch => bindActionCreators(UserAction, dispatch);
 
