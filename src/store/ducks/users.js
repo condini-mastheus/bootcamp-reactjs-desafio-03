@@ -8,6 +8,8 @@ export const Types = {
   REMOVE_REQUEST: 'users/REMOVE_REQUEST',
   REMOVE_SUCCESS: 'users/REMOVE_SUCCESS',
   REMOVE_FAILURE: 'users/REMOVE_FAILURE',
+  OPEN_MODAL: 'users/OPEN_MODAL',
+  CLOSE_MODAL: 'users/CLOSE_MODAL',
   RESET: 'users/RESET',
 };
 
@@ -16,9 +18,12 @@ export const Types = {
  */
 const INITIAL_STATE = {
   isFinished: false,
+  isModalOpen: false,
   data: [],
   error: false,
   message: '',
+  latitude: 0,
+  longitude: 0,
 };
 
 export default function users(state = INITIAL_STATE, action) {
@@ -67,6 +72,24 @@ export default function users(state = INITIAL_STATE, action) {
         isFinished: true,
         message: action.payload.message,
       };
+    case Types.OPEN_MODAL:
+      return {
+        ...state,
+        isModalOpen: true,
+        isFinished: false,
+        error: false,
+        message: '',
+        latitude: action.payload.latitude,
+        longitude: action.payload.longitude,
+      };
+    case Types.CLOSE_MODAL:
+      return {
+        ...state,
+        isModalOpen: false,
+        isFinished: false,
+        error: false,
+        message: '',
+      };
     case Types.RESET:
       return {
         ...state,
@@ -111,6 +134,19 @@ export const Creators = {
   removeUserFailure: message => ({
     type: Types.REMOVE_FAILURE,
     payload: { message },
+  }),
+
+  openModal: (longitude, latitude) => ({
+    type: Types.OPEN_MODAL,
+    payload: {
+      longitude,
+      latitude,
+    },
+  }),
+
+  closeModal: () => ({
+    type: Types.CLOSE_MODAL,
+    payload: {},
   }),
 
   resetUser: () => ({

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MapGL, { Marker } from 'react-map-gl';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+
+import { Creators as UserAction } from '../../store/ducks/users';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -28,6 +31,14 @@ class Map extends Component {
     window.removeEventListener('resize', this.resize);
   }
 
+  handleMapClick = (e) => {
+    this.props.resetUser();
+
+    const [longitude, latitude] = e.lngLat;
+
+    this.props.openModal(longitude, latitude);
+  };
+
   resize = () => {
     this.setState({
       viewport: {
@@ -39,11 +50,11 @@ class Map extends Component {
   };
 
   render() {
-    const { handleMapClick, markers } = this.props;
+    const { markers } = this.props;
     return (
       <MapGL
         {...this.state.viewport}
-        onClick={handleMapClick}
+        onClick={this.handleMapClick}
         mapStyle="mapbox://styles/mapbox/basic-v9"
         mapboxApiAccessToken="pk.eyJ1IjoiZGllZ28zZyIsImEiOiJjamh0aHc4em0wZHdvM2tyc3hqbzNvanhrIn0.3HWnXHy_RCi35opzKo8sHQ"
         onViewportChange={viewport => this.setState({ viewport })}
@@ -54,7 +65,7 @@ class Map extends Component {
               key={marker.id}
               latitude={marker.latitude}
               longitude={marker.longitude}
-              onClick={handleMapClick}
+              onClick={this.handleMapClick}
               captureClick
             >
               <CustomMarker alt={marker.name} src={marker.avatar} />
@@ -66,7 +77,6 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  handleMapClick: PropTypes.func.isRequired,
   markers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -82,7 +92,7 @@ const mapStateToProps = state => ({
   markers: state.users.data,
 });
 
-const mapDispatchToProps = _dispatch => ({});
+const mapDispatchToProps = dispatch => bindActionCreators(UserAction, dispatch);
 
 export default connect(
   mapStateToProps,
